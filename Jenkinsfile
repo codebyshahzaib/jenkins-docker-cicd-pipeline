@@ -1,24 +1,15 @@
 pipeline {
-    // Defines the Jenkins agent to run this pipeline. 
-    // TODO: Update 'my-worker-node' with your actual worker node label.
-    agent { label 'my-worker-node' }
+    agent any
 
     environment {
-        // Define global variables here
-        DOCKER_IMAGE_NAME = "my-python-app"
-        
-        // TODO: Replace 'your-username' with your actual GitHub username
-        SECONDARY_REPO_URL = "https://github.com/your-username/pipeline-deployment-configs.git"
+        SECONDARY_REPO_URL = "https://github.com/codebyshahzaib/Jenkins-pipeline-deployment-configs.git"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                echo 'Checking out Main Application Repository...'
-                // Note: The main repository (jenkins-docker-cicd-pipeline) is automatically checked out by the Jenkins job configuration.
-                
+                echo 'Checking out Main Application Repository...'                
                 echo 'Checking out Secondary Configuration Repository (Multi-SCM)...'
-                // Checking out the secondary repo into a specific folder named "deployment-configs"
                 dir('deployment-configs') {
                     git branch: 'main', url: "${env.SECONDARY_REPO_URL}"
                 }

@@ -1,13 +1,14 @@
-# TODO: Set a base image based on your application stack (e.g., node, python, ubuntu, alpine)
-FROM alpine:latest
+# Use the official lightweight Nginx image
+FROM nginx:alpine
 
-# TODO: Set up the working directory inside the container
-WORKDIR /app
+# Remove default nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
 
-# TODO: Copy application code and dependencies
-# COPY package.json .
-# RUN npm install
-COPY . .
+# Copy the frontend files to the nginx html directory
+COPY src/ /usr/share/nginx/html/
 
-# TODO: Define the default command or entrypoint to run your application
-CMD ["echo", "Docker image is running successfully!"]
+# Expose port 80 to the outside world
+EXPOSE 80
+
+# Start Nginx and keep it running in the foreground
+CMD ["nginx", "-g", "daemon off;"]

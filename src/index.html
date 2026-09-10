@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI/CD Deployment Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+    
+    <main class="glass-container">
+        <header>
+            <div class="status-indicator online"></div>
+            <h1>CI/CD Deployment Hub</h1>
+            <p>Version 1.0.0 | Built via Jenkins</p>
+        </header>
+
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon">🚀</div>
+                <h3>Build Status</h3>
+                <p class="success-text">Success</p>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🛡️</div>
+                <h3>Code Quality</h3>
+                <p class="success-text">Passed (SonarQube)</p>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🐳</div>
+                <h3>Container</h3>
+                <p class="info-text">Dockerized (Nginx)</p>
+            </div>
+        </section>
+
+        <button id="test-deploy-btn" class="action-btn">Verify Interaction</button>
+        <p id="feedback-msg" class="feedback hidden">Frontend successfully deployed and running!</p>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
