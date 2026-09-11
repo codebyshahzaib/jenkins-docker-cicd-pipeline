@@ -1,22 +1,62 @@
-# Jenkins & Docker CI/CD Pipeline 🚀
+# Release Room
 
-An end-to-end CI/CD pipeline built with Jenkins, Docker, and SonarQube. This repository contains the application source code and the main `Jenkinsfile` that orchestrates the entire build, scan, and deployment process.
+Release Room is a full-screen delivery dashboard for the Jenkins CI/CD assignment. It is a small production-shaped application with a Vite frontend, a Node.js API, and an Nginx gateway running as separate Compose services.
 
-This project implements a **Multi-SCM** checkout architecture. It pulls the main application code from this repository (`jenkins-docker-cicd-pipeline`), and pulls deployment configurations from a secondary repository (`Jenkins-pipeline-deployment-configs`).
+## Architecture
 
-## 🏗️ Pipeline Architecture
+```text
+Browser -> Nginx web container -> /api/* -> Node API container
+                    |
+                    -> compiled Vite assets
+```
 
-1. **Multi-SCM Checkout**: Jenkins pulls code from `jenkins-docker-cicd-pipeline` (App) and `Jenkins-pipeline-deployment-configs` (Config).
-2. **Code Quality Scan**: Code is analyzed using SonarQube to ensure quality gates are met.
-3. **Containerization**: If the code passes the quality scan, a Docker image is built.
-4. **Deployment**: The Docker image is deployed to a remote environment.
-5. **Notifications**: Success or failure notifications are sent to the team.
+- `frontend/` contains the Vite dashboard, frontend package manifest, Nginx config, and multi-stage image.
+- `backend/` contains the Node API, package manifest, and API image.
+- `docker-compose.yml` connects the two services and exposes only the web gateway.
+- `sonar-project.properties` scans `frontend/src`.
 
-## ✅ Completion Checklist
+## Run locally
 
-- [ ] Jenkins worker node configured
-- [ ] Required plugins installed
-- [ ] Multi-SCM checkout configured (Main Repo + Config Repo)
-- [ ] SonarQube scan integrated
-- [ ] Docker image built successfully
-- [ ] Pipeline committed to GitHub
+Requires Node.js 22 or newer.
+
+Each app owns its environment data. The real `.env` files are ignored; use the committed examples when setting up a new checkout:
+
+```bash
+cp frontend/.env.example frontend/.env
+cp backend/.env.example backend/.env
+```
+
+Frontend variables must use the `VITE_` prefix because Vite exposes them to browser code. Backend variables stay server-side.
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+The Vite development server runs at `http://localhost:5173`. Start the API in a second terminal with:
+
+```bash
+cd backend
+npm start
+```
+
+## Run with Docker Compose
+
+```bash
+docker compose up --build
+```
+
+Open `http://localhost:8081`.
+
+Stop the services with `docker compose down`.
+
+## Validation
+
+```bash
+cd frontend && npm run build
+docker compose config --quiet
+docker compose build
+```
+
+The Jenkins pipeline remains the CI/CD orchestration layer for multi-SCM checkout, SonarQube, Docker image creation, deployment, and notifications.

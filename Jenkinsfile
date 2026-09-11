@@ -19,10 +19,9 @@ pipeline {
         stage('Code Quality (SonarQube Scan)') {
             steps {
                 echo 'Running SonarQube static code analysis...'
-                // TODO: Configure SonarQube server in Jenkins and uncomment the block below
-                // withSonarQubeEnv('My SonarQube Server') {
-                //     sh 'sonar-scanner'
-                // }
+                withSonarQubeEnv('My SonarQube Server') {
+                    sh 'sonar-scanner'
+                }
             }
         }
 
@@ -30,7 +29,7 @@ pipeline {
             steps {
                 echo 'Building Docker image for the application...'
                 // TODO: Ensure Docker is installed on your worker node and uncomment the block below
-                // sh "docker build -t ${env.DOCKER_IMAGE_NAME}:latest ."
+                // sh "docker build -t ${env.DOCKER_IMAGE_NAME}:latest -f app/Dockerfile app"
             }
         }
 
