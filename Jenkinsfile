@@ -1,15 +1,18 @@
 pipeline {
-    agent any
+    agent {
+        label 'laptop-node'
+    }
 
     environment {
         SECONDARY_REPO_URL = "https://github.com/codebyshahzaib/Jenkins-pipeline-deployment-configs.git"
+        DOCKER_IMAGE_NAME = "jenkins-cicd-app"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 echo 'Checking out Main Application Repository...'                
-                echo 'Checking out Secondary Configuration Repository (Multi-SCM)...'
+                echo 'Checking out Secondary Configuration Repository...'
                 dir('deployment-configs') {
                     git branch: 'main', url: "${env.SECONDARY_REPO_URL}"
                 }
@@ -45,29 +48,34 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image for the application...'
-                // TODO: Ensure Docker is installed on your worker node and uncomment the block below
-                // sh "docker build -t ${env.DOCKER_IMAGE_NAME}:latest -f app/Dockerfile app"
+                sh "docker build -t ${env.DOCKER_IMAGE_NAME}:latest -f app/Dockerfile app"
             }
         }
 
         stage('Deploy to Remote Location') {
             steps {
                 echo 'Deploying application to remote environment...'
-                // TODO: Add deployment scripts here. 
-                // You can execute the scripts that were pulled from your secondary repository!
-                // sh "bash deployment-configs/scripts/deploy.sh"
+                //TODO 
             }
         }
     }
 
     post {
         success {
-            echo '✅ Pipeline finished successfully! Sending notification...'
-            // TODO: Add Email or Slack notification plugin steps here
+            echo ' Pipeline finished successfully! Sending notification...'
+            emailext (
+                subject: " SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: "The pipeline completed successfully!\n\nView the build here: ${env.BUILD_URL}",
+                to: "shahzaib@camp2.tkxel.com" 
+            )
         }
         failure {
-            echo '❌ Pipeline failed! Sending alert...'
-            // TODO: Add Email or Slack notification plugin steps here
+            echo ' Pipeline failed! Sending alert...'
+            emailext (
+                subject: " FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: "The pipeline has failed.\n\nPlease check the console output to see what went wrong: ${env.BUILD_URL}",
+                to: "shahzaib@camp2.tkxel.com" 
+            )
         }
     }
 }
