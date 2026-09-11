@@ -16,15 +16,28 @@ pipeline {
             }
         }
 
-        stage('Code Quality (SonarQube Scan)') {
+        stage('Code Quality (Main App)') {
             environment {
-                // Ensure the name matches the tool name configured in Manage Jenkins > Tools
                 SCANNER_HOME = tool 'sonar-scanner'
             }
             steps {
-                echo 'Running SonarQube static code analysis...'
+                echo 'Running SonarQube static code analysis for Main Application...'
                 withSonarQubeEnv('My SonarQube Server') {
                     sh "${SCANNER_HOME}/bin/sonar-scanner"
+                }
+            }
+        }
+
+        stage('Code Quality (Secondary Configs)') {
+            environment {
+                SCANNER_HOME = tool 'sonar-scanner'
+            }
+            steps {
+                echo 'Running SonarQube static code analysis for Secondary Configuration...'
+                dir('deployment-configs') {
+                    withSonarQubeEnv('My SonarQube Server') {
+                        sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=jenkins-cicd-configs -Dsonar.projectName='Jenkins CICD Configs' -Dsonar.sources=."
+                    }
                 }
             }
         }
