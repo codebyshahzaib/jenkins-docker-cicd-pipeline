@@ -45,12 +45,18 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                echo 'Building Docker image for the application...'
-                sh "docker build -t ${env.DOCKER_IMAGE_NAME}:latest -f app/Dockerfile app"
-            }
+        stage('Build & Push Docker Image') {
+    steps {
+        echo 'Building Docker image for the application...'
+        sh "docker build -t codesbyshahzaib/react-app-a5:latest -f app/Dockerfile app"
+        
+        echo 'Logging into Docker Hub and pushing image...'
+        withCredentials([usernamePassword(credentialsId: '8e0c884f-1af6-4bf9-87d8-6220544b7e88', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+            sh "echo \$PASS | docker login -u \$USER --password-stdin"
+            sh "docker push codesbyshahzaib/react-app-a5:latest"
         }
+    }
+}
 
         stage('Deploy to Remote Location') {
             steps {
@@ -65,7 +71,7 @@ pipeline {
             echo ' Pipeline finished successfully! Sending notification...'
             emailext (
                 subject: " SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: "The pipeline completed successfully!\n\nView the build here: ${env.BUILD_URL}",
+                body: "The pipeline completed successfully!",
                 to: "shahzaib@camp2.tkxel.com" 
             )
         }
@@ -73,7 +79,7 @@ pipeline {
             echo ' Pipeline failed! Sending alert...'
             emailext (
                 subject: " FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: "The pipeline has failed.\n\nPlease check the console output to see what went wrong: ${env.BUILD_URL}",
+                body: "The pipeline has failed.",
                 to: "shahzaib@camp2.tkxel.com" 
             )
         }
