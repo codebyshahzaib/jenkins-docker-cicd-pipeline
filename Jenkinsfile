@@ -46,22 +46,35 @@ pipeline {
         }
 
         stage('Build & Push Docker Image') {
-    steps {
-        echo 'Building Docker image for the application...'
-        sh "docker build -t codesbyshahzaib/react-app-a5:latest -f app/Dockerfile app"
+          steps {
+            echo 'Building Docker image for the application...'
+              sh "docker build -t codesbyshahzaib/react-app-a5:latest -f app/Dockerfile app"
         
-        echo 'Logging into Docker Hub and pushing image...'
-        withCredentials([usernamePassword(credentialsId: '8e0c884f-1af6-4bf9-87d8-6220544b7e88', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-            sh "echo \$PASS | docker login -u \$USER --password-stdin"
-            sh "docker push codesbyshahzaib/react-app-a5:latest"
+                 echo 'Logging into Docker Hub and pushing image...'
+                 withCredentials([usernamePassword(credentialsId: '8e0c884f-1af6-4bf9-87d8-6220544b7e88', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                 sh "echo \$PASS | docker login -u \$USER --password-stdin"
+                 sh "docker push codesbyshahzaib/react-app-a5:latest"
+              }
+            }
         }
-    }
-}
 
         stage('Deploy to Remote Location') {
             steps {
                 echo 'Deploying application to remote environment...'
-                //TODO 
+                sshagent(['ec2-ssh-key']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@44.200.41.142 "
+                            docker pull codesbyshahzaib/react-app-a5:latest &&
+                            docker stop jenkins-cicd-app || true &&
+                            docker rm jenkins-cicd-app || true &&
+                            docker run -d \
+                                --name jenkins-cicd-app \
+                                -p 80:80 \
+                                --restart unless-stopped \
+                                codesbyshahzaib/react-app-a5:latest
+                        "
+                    '''
+                }
             }
         }
     }
@@ -83,5 +96,6 @@ pipeline {
                 to: "shahzaib@camp2.tkxel.com" 
             )
         }
+        
     }
 }
