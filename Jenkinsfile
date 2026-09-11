@@ -17,10 +17,14 @@ pipeline {
         }
 
         stage('Code Quality (SonarQube Scan)') {
+            environment {
+                // Ensure the name matches the tool name configured in Manage Jenkins > Tools
+                SCANNER_HOME = tool 'sonar-scanner'
+            }
             steps {
                 echo 'Running SonarQube static code analysis...'
                 withSonarQubeEnv('My SonarQube Server') {
-                    sh 'sonar-scanner'
+                    sh "${SCANNER_HOME}/bin/sonar-scanner"
                 }
             }
         }
