@@ -26,7 +26,7 @@ pipeline {
             steps {
                 echo 'Running SonarQube static code analysis for Main Application...'
                 withSonarQubeEnv('My SonarQube Server') {
-                    sh "${SCANNER_HOME}/bin/sonar-scanner"
+                    sh "\"${SCANNER_HOME}/bin/sonar-scanner\""
                 }
             }
         }
@@ -39,7 +39,7 @@ pipeline {
                 echo 'Running SonarQube static code analysis for Secondary Configuration...'
                 dir('deployment-configs') {
                     withSonarQubeEnv('My SonarQube Server') {
-                        sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=jenkins-cicd-configs -Dsonar.projectName='Jenkins CICD Configs' -Dsonar.sources=."
+                        sh "\"${SCANNER_HOME}/bin/sonar-scanner\" -Dsonar.projectKey=jenkins-cicd-configs -Dsonar.projectName='Jenkins CICD Configs' -Dsonar.sources=."
                     }
                 }
             }
