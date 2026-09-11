@@ -57,7 +57,16 @@ pipeline {
               }
             }
         }
-
+stage('Test EC2 SSH') {
+    steps {
+        sshagent(['ec2-ssh-key']) {
+            sh '''
+                ssh -o StrictHostKeyChecking=no ubuntu@44.200.41.142 \
+                "hostname && docker --version"
+            '''
+        }
+    }
+}
         stage('Deploy to Remote Location') {
             steps {
                 echo 'Deploying application to remote environment...'
