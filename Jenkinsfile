@@ -61,7 +61,7 @@ stage('Test EC2 SSH') {
     steps {
         sshagent(['ec2-ssh-key']) {
             sh '''
-                ssh -o StrictHostKeyChecking=no ubuntu@44.200.41.142 \
+                ssh -o StrictHostKeyChecking=no ubuntu@98.82.126.113 \
                 "hostname && docker --version"
             '''
         }
@@ -72,7 +72,7 @@ stage('Test EC2 SSH') {
                 echo 'Deploying application to remote environment...'
                 sshagent(['ec2-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@44.200.41.142 "
+                        ssh -o StrictHostKeyChecking=no ubuntu@98.82.126.113 "
                             docker pull codesbyshahzaib/react-app-a5:latest &&
                             docker stop jenkins-cicd-app || true &&
                             docker rm jenkins-cicd-app || true &&
